@@ -38,42 +38,32 @@ def number_of_long_entries(n=30, column_name=TITLE_STR):
         books_reader = csv.reader(file, delimiter=";")
 
         for row in books_reader:
-            if len(row[columns[column_name]]) > name_size:
+            if len(row[columns[column_name]]) > n:
                 counter += 1
     return counter
 
 
-def find_by_author(
-    author,
-    start_date,
-    end_date,
-    date_str=DATE_STR,
-    author_str=AUTHOR_STR,
-    title_str=TITLE_STR,
-):
+def find_by_author(author, start_date, end_date):
     author_books = []
-    columns = {date_str: 0, author_str: 0, title_str: 0}
+    columns = {DATE_STR: 0, AUTHOR_STR: 0, TITLE_STR: 0}
     find_col_numbers(columns)
 
     with open(FILENAME, newline="") as file:
         csvr = csv.reader(file, delimiter=";")
         next(csvr)
         for entry in csvr:
-            entry_date = dt.strptime(entry[columns[date_str]], "%d.%m.%Y %H:%M")
+            entry_date = dt.strptime(entry[columns[DATE_STR]], "%d.%m.%Y %H:%M")
             if (
-                entry[columns[author_str]] == author
+                entry[columns[AUTHOR_STR]] == author
                 and entry_date >= start_date
                 and entry_date <= end_date
             ):
-                author_books.append(entry[columns[title_str]])
+                author_books.append(entry[columns[TITLE_STR]])
     return author_books
 
 
 def write_random_entries(n=20, filename=OUTPUT_FILENAME):
-    date_str = "Дата поступления"
-    author_str = "Автор"
-    title_str = "Название"
-    columns = {date_str: 0, author_str: 0, title_str: 0}
+    columns = {DATE_STR: 0, AUTHOR_STR: 0, TITLE_STR: 0}
     find_col_numbers(columns)
 
     with open(FILENAME, newline="") as file:
@@ -88,11 +78,11 @@ def write_random_entries(n=20, filename=OUTPUT_FILENAME):
                     output_file.write(
                         str(j)
                         + ". "
-                        + entry[columns[author_str]]
+                        + entry[columns[AUTHOR_STR]]
                         + ". "
-                        + entry[columns[title_str]]
+                        + entry[columns[TITLE_STR]]
                         + " - "
-                        + str(dt.strptime(entry[columns[date_str]], "%d.%m.%Y %H:%M").year)
+                        + str(dt.strptime(entry[columns[DATE_STR]], "%d.%m.%Y %H:%M").year)
                         + "\n"
                     )
                     j += 1
@@ -103,6 +93,7 @@ def main():
     start_date = dt(2016, 1, 1)
     end_date = dt(2018, 12, 31, hour=23, minute=59, second=59)
     print(find_by_author("Джей Эшер", start_date, end_date))
+    print(number_of_long_entries())
     write_random_entries()
 
 
